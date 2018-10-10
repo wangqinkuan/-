@@ -11,22 +11,34 @@
         <!--android:id="@+id/Button_order"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/emptybutton"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="50dp"-->
         <!--android:text="@string/order"/>-->
     <!--<Button-->
         <!--android:id="@+id/Button_listorder"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/emptybutton"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="50dp"-->
         <!--android:text="@string/listorder"/>-->
     <!--<Button-->
         <!--android:id="@+id/Button_loginOrSignin"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/emptybutton"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="50dp"-->
         <!--android:text="@string/loginOrsignin"/>-->
 
     <!--<Button-->
         <!--android:id="@+id/Button_help"-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->
+        <!--android:background="@drawable/emptybutton"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:layout_margin="50dp"-->
         <!--android:text="@string/help"/>-->
 
     <GridView

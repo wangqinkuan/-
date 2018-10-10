@@ -1,5 +1,6 @@
 package es.source.code.activity;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,10 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.myapp.scos.R;
 
@@ -23,18 +27,27 @@ import es.source.code.adapter.OrderFoodAdapter;
 import es.source.code.factory.FoodFactory;
 import es.source.code.factory.HotFoodFactory;
 import es.source.code.model.Food;
+import es.source.code.model.User;
 
 public class FoodOrderView extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private LayoutInflater layoutInflater;
-
+    private OrderFoodAdapter orderFoodAdapter;
+    private NotOrderFoodAdapter notOrderFoodAdapter;
     private View hasorderview;
     private View hasnotorderview;
 
     List<String> Titlelist=new ArrayList<>();
     List<View> Pagelist=new ArrayList<>();
 
+    ListView orderfoodlistView ;
+    ListView notorderfoodlistView ;
+
+    Button button_submitorder,button_buysubmit;
+    public static TextView textView_ordertotalprice,textView_ordercount,textView_notordertotalprice,textView_notordercount;
+
+    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +57,11 @@ public class FoodOrderView extends AppCompatActivity {
 
         setContentView(R.layout.activity_food_order_view);
 
+        Intent intent=getIntent();
+        user=(User)intent.getSerializableExtra(LoginOrRegister.User);
+
         init();
+        upodateTotaldata();
     }
     void init(){
         //初始化tablayout与viewpager
@@ -70,17 +87,66 @@ public class FoodOrderView extends AppCompatActivity {
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setTabsFromPagerAdapter(adapter);
 
-        initFooditem(hasorderview,R.id.food_orderview_hasorderlist,FoodView.foods,true);
-        initFooditem(hasnotorderview,R.id.food_orderview_hasnotorderlist,FoodView.foods,false);
+        textView_ordertotalprice=(TextView)hasorderview.findViewById(R.id.food_orderview_totalprice);
+        textView_ordercount=(TextView)hasorderview.findViewById(R.id.food_orderview_totalcount);
+        textView_notordertotalprice=(TextView)hasnotorderview.findViewById(R.id.food_notorderview_totalprice);
+        textView_notordercount=(TextView)hasnotorderview.findViewById(R.id.food_notorderview_totalcount);
+
+        button_submitorder=(Button)hasnotorderview.findViewById(R.id.button_food_notorderview_submit);
+        button_buysubmit=(Button)hasorderview.findViewById(R.id.button_food_orderview_submit);
+        button_submitorder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for(Food food:FoodView.foods){
+                    if(food.getFood_order_time()>0&&!food.isFood_hasorder()){
+                        food.setFood_hasorder(true);
+                    }
+                }
+                orderFoodAdapter.notifyDataSetChanged();
+                notOrderFoodAdapter.notifyDataSetChanged();
+                upodateTotaldata();
+            }
+        });
+
+        button_buysubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(user.getOldUser()){
+                    Toast.makeText(FoodOrderView.this, "您好,老用户7折", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        //添加listview的数据源与数据
+        orderFoodAdapter = new OrderFoodAdapter(this, R.layout.food_hasorder_item, FoodView.foods);
+        notOrderFoodAdapter=new NotOrderFoodAdapter(this,R.layout.food_hasnotorder_item,FoodView.foods);
+
+        orderfoodlistView = (ListView) hasorderview.findViewById(R.id.food_orderview_hasorderlist);
+        notorderfoodlistView = (ListView) hasnotorderview.findViewById(R.id.food_orderview_hasnotorderlist);
+
+        orderfoodlistView.setAdapter(orderFoodAdapter);
+        notorderfoodlistView.setAdapter(notOrderFoodAdapter);
 
     }
-    //指定pageview 以及list的id 还有foods数据 boolean order用于标识是否是已点页面
-    void initFooditem(View foodview,int foodlist,List<Food> foods,boolean order){
-        ArrayAdapter<Food> adapter;
-        if(order) adapter = new OrderFoodAdapter(this, R.layout.food_hasorder_item, foods);
-        else  adapter=new NotOrderFoodAdapter(this,R.layout.food_hasnotorder_item,foods);
-        ListView foodlistView = (ListView) foodview.findViewById(foodlist);
-        foodlistView.setAdapter(adapter);
+    //刷新总价与总量
+    public static void upodateTotaldata(){
+        int ordertotalcount=0,notordertotalcount=0;
+        double ordertotalprice=0,notordertotalprice=0;
+        for(Food food:FoodView.foods){
+            //未下单
+            if(!food.isFood_hasorder()&&food.getFood_order_time()>0){
+                notordertotalcount+=food.getFood_order_time();
+                notordertotalprice+=food.getFood_price();
+            }else if(food.isFood_hasorder()){
+                ordertotalcount+=food.getFood_order_time();
+                ordertotalprice+=food.getFood_price();
+            }
+        }
+
+        textView_ordertotalprice.setText("总价"+ordertotalprice);
+        textView_ordercount.setText("总量"+ordertotalcount);
+        textView_notordertotalprice.setText("总价"+notordertotalprice);
+        textView_notordercount.setText("总量"+notordertotalcount);
     }
 
 }

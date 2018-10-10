@@ -25,7 +25,6 @@
             android:permission="scos.permisson.ACCESSSCOS">
             <intent-filter>
                 <action android:name="scos.intent.action.SCOSMAIN" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="scos.intent.category.SCOSLAUNCHER" />
             </intent-filter>

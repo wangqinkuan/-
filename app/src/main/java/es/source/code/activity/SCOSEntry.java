@@ -43,7 +43,6 @@ public class SCOSEntry extends AppCompatActivity implements View.OnTouchListener
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         return gestureDetector.onTouchEvent(event);
-
     }
 
     private class gestureListener implements GestureDetector.OnGestureListener{
@@ -77,21 +76,14 @@ public class SCOSEntry extends AppCompatActivity implements View.OnTouchListener
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if(e1.getX() - e2.getX() >20){
-                Log.d("fling", "fling left");
-                startMainScreen("scos.intent.action.SCOSMAIN","scos.intent.category.SCOSLAUNCHER");
+                Intent intent=new Intent("scos.intent.action.SCOSMAIN");
+                intent.addCategory("scos.intent.category.SCOSLAUNCHER");
+                intent.putExtra(FromEntry,"FromEntr");
+                startActivity(intent);
             }
-
             return false;
         }
     }
-    //开启mainscreen
-    private void startMainScreen(String action,String category){
-        Intent intent=new Intent(action);
-        //注意在manifest中还要添加默认的category
-        intent.addCategory(category);
-        intent.putExtra(FromEntry,"FromEntry");
 
-        startActivity(intent);
-    }
 
 }

@@ -79,10 +79,8 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
             case R.id.Button_login:
                 //通过正则验证 则跳转
                 if(validateUserNameorPassword(username,reg)&&validateUserNameorPassword(password,reg)){
-                    Log.d("login", "login success");
                     User user= UserFactory.createuser(username,password,true);
                     startMain(LoginStatus,LoginSuccess,loginorregister_loginsucuesscode,user);
-                    //startMain("LoginStatus","LoginSuccess",loginorregister_loginsucuesscode);
                 }else{
                     editText_username.setError(getString(R.string.loginOrRegister_error));
                     editText_password.setError(getString(R.string.loginOrRegister_error));

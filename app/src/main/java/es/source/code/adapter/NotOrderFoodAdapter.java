@@ -16,6 +16,8 @@ import com.myapp.scos.R;
 
 import java.util.List;
 
+import es.source.code.activity.FoodOrderView;
+import es.source.code.activity.FoodView;
 import es.source.code.model.Food;
 
 public class NotOrderFoodAdapter extends ArrayAdapter<Food>{
@@ -48,18 +50,33 @@ public class NotOrderFoodAdapter extends ArrayAdapter<Food>{
             view=convertView;
             viewHolder=(NotOrderFoodAdapter.ViewHolder)view.getTag();
         }
-        //设置
-        viewHolder.foodimage.setImageResource(food.getFood_img());
-        viewHolder.foodname.setText("菜名"+food.getFood_name());
-        viewHolder.foodprice.setText("价格"+food.getFood_price());
-        viewHolder.foodcount.setText("份量"+food.getFood_order_time());
-        viewHolder.foodnote.setText("备注"+food.getFood_note());
-        viewHolder.button_disorder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(), "难吃的一笔 退钱", Toast.LENGTH_SHORT).show();
-            }
-        });
+        //设置,点菜次数大于0且未下单则在此处显示
+        if(food.getFood_order_time()>0&&!food.isFood_hasorder()){
+            viewHolder.foodimage.setImageResource(food.getFood_img());
+            viewHolder.foodname.setText("菜名"+food.getFood_name());
+            viewHolder.foodprice.setText("价格"+food.getFood_price());
+            viewHolder.foodcount.setText("份量"+food.getFood_order_time());
+            viewHolder.foodnote.setText("备注"+food.getFood_note());
+            //退订按钮
+            viewHolder.button_disorder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    food.setFood_order_time(food.getFood_order_time()-1);
+                    FoodView.nofityall();
+                    notifyDataSetChanged();
+                    FoodOrderView.upodateTotaldata();
+                    Toast.makeText(getContext(), "退订", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else{
+            viewHolder.foodimage.setVisibility(View.GONE);
+            viewHolder.foodname.setVisibility(View.GONE);
+            viewHolder.foodprice.setVisibility(View.GONE);
+            viewHolder.foodcount.setVisibility(View.GONE);
+            viewHolder.foodnote.setVisibility(View.GONE);
+            viewHolder.button_disorder.setVisibility(View.GONE);
+        }
+
 
 
 

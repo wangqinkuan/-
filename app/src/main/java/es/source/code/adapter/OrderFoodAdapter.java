@@ -49,13 +49,19 @@ public class OrderFoodAdapter extends ArrayAdapter<Food> {
             viewHolder=(OrderFoodAdapter.ViewHolder)view.getTag();
         }
         //设置
-        viewHolder.foodimage.setImageResource(food.getFood_img());
-        viewHolder.foodname.setText("菜名"+food.getFood_name());
-        viewHolder.foodprice.setText("价格"+food.getFood_price());
-        viewHolder.foodcount.setText("份量"+food.getFood_order_time());
-        viewHolder.foodnote.setText("备注"+food.getFood_note());
-
-
+        if(food.isFood_hasorder()){
+            viewHolder.foodimage.setImageResource(food.getFood_img());
+            viewHolder.foodname.setText("菜名:"+food.getFood_name());
+            viewHolder.foodprice.setText("价格:"+food.getFood_price());
+            viewHolder.foodcount.setText("份量:"+food.getFood_order_time());
+            viewHolder.foodnote.setText("备注:"+food.getFood_note());
+        }else{
+            viewHolder.foodimage.setVisibility(View.GONE);
+            viewHolder.foodname.setVisibility(View.GONE);
+            viewHolder.foodprice.setVisibility(View.GONE);
+            viewHolder.foodcount.setVisibility(View.GONE);
+            viewHolder.foodnote.setVisibility(View.GONE);
+        }
 
 
         return view;

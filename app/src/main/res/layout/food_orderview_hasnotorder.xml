@@ -12,19 +12,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:id="@+id/food_notorderview_totalprice"
-            android:text="总价"
+            android:text="总价:"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <TextView
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
             android:id="@+id/food_notorderview_totalcount"
-            android:text="总数"
+            android:text="总数:"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_food_notorderview_submit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@drawable/emptybutton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:text="提交订单"/>
     </LinearLayout>
 </LinearLayout>

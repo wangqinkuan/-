@@ -97,7 +97,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
        public void onClick(View v) {
 //        switch(v.getId()){
 //            case R.id.Button_loginOrSignin:
-//                StartActExclipt(LoginOrRegister.class,logincode);
+//                startActivityForResult(new Intent(this,LoginOrRegister.class),logincode);
 //                break;
 //        }
      }
@@ -107,12 +107,40 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         //策略模式,处理login界面返回的数据
-        MainScreenHandle m= new MainScreenHandle(resultCode);
-        m.handle(this,data);
+//        MainScreenHandle m= new MainScreenHandle(resultCode);
+//        m.handle(this,data);
+        if(resultCode==LoginOrRegister.loginorregister_loginsucuesscode){
+            String loginorregisterstatus=data.getStringExtra(LoginOrRegister.LoginStatus);
+            if(loginorregisterstatus.equals(LoginOrRegister.LoginSuccess)){
+                user=(User) data.getSerializableExtra(LoginOrRegister.User);
+                Toast.makeText(this, user.getUsername()+"登录成功", Toast.LENGTH_SHORT).show();
+            }
+            else if(loginorregisterstatus.equals(LoginOrRegister.RegisterSuccess)){
+                user=(User) data.getSerializableExtra(LoginOrRegister.User);
+                Toast.makeText(this, user.getUsername()+"注册成功,欢迎成为SCOS新用户", Toast.LENGTH_SHORT).show();
+            }else {
+                user=null;
+            }
+            //显示隐藏的导航项
+            if(datalist.size()<4){
+                Map<String,Object> map1=new HashMap<String ,Object>();
+                map1.put("img",R.drawable.order);
+                map1.put("text","点菜");
+
+                Map<String,Object> map2=new HashMap<String ,Object>();
+                map2.put("img",R.drawable.list);
+                map2.put("text","查看订单");
+
+
+                datalist.add(0,map1);
+                datalist.add(1,map2);
+                adapter.notifyDataSetChanged();
+            }
+        }
     }
 
     private void initdata(){
-        int icon[]={R.drawable.ic_logo,R.drawable.ic_logo,R.drawable.ic_logo,R.drawable.ic_logo};
+        int icon[]={R.drawable.order,R.drawable.list,R.drawable.login,R.drawable.help};
         String name[]={"点菜","查看订单","登录/注册","帮助"};
         datalist=new ArrayList<Map<String,Object>>();
         for(int i=0;i<icon.length;i++){
@@ -128,14 +156,16 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         TextView textView= (TextView)view.findViewById(R.id.mainscreen_gridview_text);
         Toast.makeText(this, textView.getText().toString(), Toast.LENGTH_SHORT).show();
-
         String itemtext=textView.getText().toString();
         switch (itemtext){
             case "登录/注册":
                 startActivityForResult(new Intent(this,LoginOrRegister.class),logincode);
                 break;
             case "点菜":
-                startActivity(new Intent(this,FoodView.class));
+                Intent intent=new Intent(this,FoodView.class);
+                intent.putExtra(LoginOrRegister.User,user);
+                startActivity(intent);
+                break;
         }
     }
 }

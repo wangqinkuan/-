@@ -21,15 +21,20 @@
             android:layout_height="wrap_content" />
         <TextView
             android:id="@+id/fooddetail_foodprice"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <EditText
-            android:hint="有屁就放"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:hint="输入备注"
             android:id="@+id/fooddetail_foodnoteedit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/fooddetail_orderornot"
+            android:background="@drawable/emptybutton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>

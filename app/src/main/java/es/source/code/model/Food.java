@@ -8,7 +8,24 @@ public class Food {
     private double food_price;
     private int food_img;
     private int food_type;
+    //备注
+    private String food_note="";
     private int food_order_button;
+    //被点了几次
+    private int food_order_time;
+    //是否下单
+    private boolean food_hasorder;
+
+    public boolean isFood_hasorder() {
+        return food_hasorder;
+    }
+
+    public void setFood_hasorder(boolean food_hasorder) {
+        this.food_hasorder = food_hasorder;
+    }
+
+
+
 
     public String getFood_note() {
         return food_note;
@@ -18,8 +35,6 @@ public class Food {
         this.food_note = food_note;
     }
 
-    //备注
-    private String food_note="";
 
     public int getFood_order_time() {
         return food_order_time;
@@ -29,8 +44,7 @@ public class Food {
         this.food_order_time = food_order_time;
     }
 
-    //被点了几次
-    private int food_order_time;
+
 
     public String getFood_name() {
         return food_name;

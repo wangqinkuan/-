@@ -20,6 +20,7 @@ import com.myapp.scos.R;
 import org.w3c.dom.Text;
 
 import es.source.code.model.Food;
+import es.source.code.model.FoodType;
 
 public class FoodDetail extends AppCompatActivity implements View.OnTouchListener{
 
@@ -126,7 +127,8 @@ public class FoodDetail extends AppCompatActivity implements View.OnTouchListene
                     button_orderornot.setText("退订!");
                 }
                 Toast.makeText(FoodDetail.this, "点菜次数"+food.getFood_order_time(), Toast.LENGTH_SHORT).show();
-                for(int i=0;i<FoodView.foodItemAdapters.size();i++) FoodView.foodItemAdapters.get(i).notifyDataSetChanged();
+                //刷新数据
+                FoodView.nofityall();
             }
         });
 

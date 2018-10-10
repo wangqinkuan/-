@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 public class User implements Serializable{
     String Username;
     String Password;
-    //新用户要注册
     Boolean OldUser;
 
     public String getUsername() {

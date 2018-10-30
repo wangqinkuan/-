@@ -48,19 +48,27 @@ public class OrderFoodAdapter extends ArrayAdapter<Food> {
             view=convertView;
             viewHolder=(OrderFoodAdapter.ViewHolder)view.getTag();
         }
-        //设置
-        if(food.isFood_hasorder()){
-            viewHolder.foodimage.setImageResource(food.getFood_img());
-            viewHolder.foodname.setText("菜名:"+food.getFood_name());
-            viewHolder.foodprice.setText("价格:"+food.getFood_price());
-            viewHolder.foodcount.setText("份量:"+food.getFood_order_time());
-            viewHolder.foodnote.setText("备注:"+food.getFood_note());
-        }else{
+        //未下单,则全部隐藏
+        if(!food.isFood_hasorder()){
             viewHolder.foodimage.setVisibility(View.GONE);
             viewHolder.foodname.setVisibility(View.GONE);
             viewHolder.foodprice.setVisibility(View.GONE);
             viewHolder.foodcount.setVisibility(View.GONE);
             viewHolder.foodnote.setVisibility(View.GONE);
+        }else{
+            //已下单,则先设置可视,因为在一个界面中,先设置了隐藏,即使刷新了数据,还是显示不出来
+            viewHolder.foodimage.setVisibility(View.VISIBLE);
+            viewHolder.foodname.setVisibility(View.VISIBLE);
+            viewHolder.foodprice.setVisibility(View.VISIBLE);
+            viewHolder.foodcount.setVisibility(View.VISIBLE);
+            viewHolder.foodnote.setVisibility(View.VISIBLE);
+
+
+            viewHolder.foodimage.setImageResource(food.getFood_img());
+            viewHolder.foodname.setText(food.getFood_name());
+            viewHolder.foodprice.setText("价格:"+food.getFood_price());
+            viewHolder.foodcount.setText("份量:"+food.getFood_order_time());
+            viewHolder.foodnote.setText("备注:"+food.getFood_note());
         }
 
 

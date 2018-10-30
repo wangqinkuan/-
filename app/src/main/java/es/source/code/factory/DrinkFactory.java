@@ -13,6 +13,7 @@ public class DrinkFactory implements FoodFactory{
         food.setFood_type(FoodType.Drink);
         food.setFood_order_time(0);
         food.setFood_note("");
+        food.setFood_reserve(10);
         food.setFood_hasorder(false);
         return food;
     }

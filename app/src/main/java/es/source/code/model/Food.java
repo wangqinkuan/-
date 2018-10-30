@@ -15,6 +15,18 @@ public class Food {
     private int food_order_time;
     //是否下单
     private boolean food_hasorder;
+    //存量
+    private int food_reserve;
+
+    public int getFood_reserve() {
+        return food_reserve;
+    }
+
+    public void setFood_reserve(int food_reserve) {
+        this.food_reserve = food_reserve;
+    }
+
+
 
     public boolean isFood_hasorder() {
         return food_hasorder;

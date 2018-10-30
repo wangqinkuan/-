@@ -2,7 +2,9 @@ package es.source.code.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.Image;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +33,8 @@ import es.source.code.factory.UserFactory;
 import es.source.code.model.User;
 
 public class MainScreen extends AppCompatActivity implements View.OnClickListener,AdapterView.OnItemClickListener{
+
+    SharedPreferences sp;
     //状态码 登录界面的
     private final int logincode=100;
 
@@ -91,6 +95,7 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         }
 
 
+
     }
 
       @Override
@@ -109,13 +114,18 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
         //策略模式,处理login界面返回的数据
 //        MainScreenHandle m= new MainScreenHandle(resultCode);
 //        m.handle(this,data);
+        sp=getSharedPreferences("User", MODE_PRIVATE);
+        int loginstate=sp.getInt("loginState",-1);
+        Log.d("logstate", "onActivityResult: "+loginstate);
         if(resultCode==LoginOrRegister.loginorregister_loginsucuesscode){
             String loginorregisterstatus=data.getStringExtra(LoginOrRegister.LoginStatus);
-            if(loginorregisterstatus.equals(LoginOrRegister.LoginSuccess)){
+            //loginorregisterstatus.equals(LoginOrRegister.LoginSuccess)
+            //loginorregisterstatus.equals(LoginOrRegister.RegisterSuccess)
+            if(loginstate==1){
                 user=(User) data.getSerializableExtra(LoginOrRegister.User);
                 Toast.makeText(this, user.getUsername()+"登录成功", Toast.LENGTH_SHORT).show();
             }
-            else if(loginorregisterstatus.equals(LoginOrRegister.RegisterSuccess)){
+            else if(loginstate==2){
                 user=(User) data.getSerializableExtra(LoginOrRegister.User);
                 Toast.makeText(this, user.getUsername()+"注册成功,欢迎成为SCOS新用户", Toast.LENGTH_SHORT).show();
             }else {
@@ -165,6 +175,9 @@ public class MainScreen extends AppCompatActivity implements View.OnClickListene
                 Intent intent=new Intent(this,FoodView.class);
                 intent.putExtra(LoginOrRegister.User,user);
                 startActivity(intent);
+                break;
+            case "帮助":
+                startActivity(new Intent(this,SCOSHelper.class));
                 break;
         }
     }

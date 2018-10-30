@@ -14,6 +14,7 @@ public class ColdFoodFactory implements FoodFactory{
         food.setFood_order_time(0);
         food.setFood_note("");
         food.setFood_hasorder(false);
+        food.setFood_reserve(10);
         return food;
     }
 }

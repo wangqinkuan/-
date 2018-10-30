@@ -17,10 +17,7 @@ import android.widget.Toast;
 
 import com.myapp.scos.R;
 
-import org.w3c.dom.Text;
-
 import es.source.code.model.Food;
-import es.source.code.model.FoodType;
 
 public class FoodDetail extends AppCompatActivity implements View.OnTouchListener{
 
@@ -118,17 +115,20 @@ public class FoodDetail extends AppCompatActivity implements View.OnTouchListene
             @Override
             public void onClick(View v) {
                 int count=food.getFood_order_time();
+                int reserve=food.getFood_reserve();
                 if(food.getFood_order_time()>0){
                     food.setFood_order_time(--count);
+                    food.setFood_reserve(++reserve);
                     button_orderornot.setText("点菜!");
                 }
                 else{
+                    food.setFood_reserve(--reserve);
                     food.setFood_order_time(++count);
                     button_orderornot.setText("退订!");
                 }
                 Toast.makeText(FoodDetail.this, "点菜次数"+food.getFood_order_time(), Toast.LENGTH_SHORT).show();
                 //刷新数据
-                FoodView.nofityall();
+                FoodView.nofityalladapter();
             }
         });
 

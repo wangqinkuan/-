@@ -53,7 +53,7 @@ public class NotOrderFoodAdapter extends ArrayAdapter<Food>{
         //设置,点菜次数大于0且未下单则在此处显示
         if(food.getFood_order_time()>0&&!food.isFood_hasorder()){
             viewHolder.foodimage.setImageResource(food.getFood_img());
-            viewHolder.foodname.setText("菜名"+food.getFood_name());
+            viewHolder.foodname.setText(food.getFood_name());
             viewHolder.foodprice.setText("价格"+food.getFood_price());
             viewHolder.foodcount.setText("份量"+food.getFood_order_time());
             viewHolder.foodnote.setText("备注"+food.getFood_note());
@@ -62,7 +62,7 @@ public class NotOrderFoodAdapter extends ArrayAdapter<Food>{
                 @Override
                 public void onClick(View v) {
                     food.setFood_order_time(food.getFood_order_time()-1);
-                    FoodView.nofityall();
+                    FoodView.nofityalladapter();
                     notifyDataSetChanged();
                     FoodOrderView.upodateTotaldata();
                     Toast.makeText(getContext(), "退订", Toast.LENGTH_SHORT).show();

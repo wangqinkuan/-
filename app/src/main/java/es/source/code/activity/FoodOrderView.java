@@ -1,15 +1,18 @@
 package es.source.code.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Looper;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -20,12 +23,9 @@ import com.myapp.scos.R;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.source.code.adapter.FoodItemAdapter;
 import es.source.code.adapter.FoodViewPaperAdapter;
 import es.source.code.adapter.NotOrderFoodAdapter;
 import es.source.code.adapter.OrderFoodAdapter;
-import es.source.code.factory.FoodFactory;
-import es.source.code.factory.HotFoodFactory;
 import es.source.code.model.Food;
 import es.source.code.model.User;
 
@@ -37,6 +37,7 @@ public class FoodOrderView extends AppCompatActivity {
     private NotOrderFoodAdapter notOrderFoodAdapter;
     private View hasorderview;
     private View hasnotorderview;
+    private ProgressDialog progressDialog;
 
     List<String> Titlelist=new ArrayList<>();
     List<View> Pagelist=new ArrayList<>();
@@ -48,6 +49,7 @@ public class FoodOrderView extends AppCompatActivity {
     public static TextView textView_ordertotalprice,textView_ordercount,textView_notordertotalprice,textView_notordercount;
 
     User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +64,14 @@ public class FoodOrderView extends AppCompatActivity {
 
         init();
         upodateTotaldata();
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("结账");
+        progressDialog.setMessage("支付中,请勿关闭......");
+        //    设置setCancelable(false); 表示我们不能取消这个弹出框，等支付完成之后再让弹出框消失
+        progressDialog.setCancelable(false);
+        //    设置ProgressDialog样式为水平的样式
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
     }
     void init(){
         //初始化tablayout与viewpager
@@ -94,6 +104,7 @@ public class FoodOrderView extends AppCompatActivity {
 
         button_submitorder=(Button)hasnotorderview.findViewById(R.id.button_food_notorderview_submit);
         button_buysubmit=(Button)hasorderview.findViewById(R.id.button_food_orderview_submit);
+        //提交订单
         button_submitorder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,17 +113,20 @@ public class FoodOrderView extends AppCompatActivity {
                         food.setFood_hasorder(true);
                     }
                 }
+                //刷新数据
                 orderFoodAdapter.notifyDataSetChanged();
                 notOrderFoodAdapter.notifyDataSetChanged();
+                //更新总量总价
                 upodateTotaldata();
             }
         });
-
+        //结账
         button_buysubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(user.getOldUser()){
                     Toast.makeText(FoodOrderView.this, "您好,老用户7折", Toast.LENGTH_SHORT).show();
+                    new MyAsyncTask().execute();
                 }
             }
         });
@@ -148,5 +162,57 @@ public class FoodOrderView extends AppCompatActivity {
         textView_notordertotalprice.setText("总价"+notordertotalprice);
         textView_notordercount.setText("总量"+notordertotalcount);
     }
+
+
+   public class MyAsyncTask extends AsyncTask<Void,Integer,Void>{
+
+       @Override
+       protected Void doInBackground(Void... voids) {
+           //设置进度条进度
+           for(int i=1;i<=4;i++){
+               try {
+                   Thread.sleep(1000);
+                   //设置进度0~100
+                   int progress=i*100/4;
+                   Log.d("p", "doInBackground: "+progress);
+                   publishProgress(progress);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+
+           }
+           Looper.prepare();
+           //修改按钮不可点击并toast
+           runOnUiThread(new Runnable() {
+               @Override
+               public void run() {
+                   button_buysubmit.setEnabled(false);
+                   Toast.makeText(FoodOrderView.this, "结账金额"+textView_ordertotalprice.getText(), Toast.LENGTH_SHORT).show();
+
+               }
+           });
+           return null;
+       }
+
+       @Override
+       protected void onPreExecute() {
+           super.onPreExecute();
+           //显示进度
+           progressDialog.show();
+       }
+        //完毕后执行
+       @Override
+       protected void onPostExecute(Void aVoid) {
+           super.onPostExecute(aVoid);
+           progressDialog.setProgress(0);
+           progressDialog.dismiss();
+       }
+        //更新进度
+       @Override
+       protected void onProgressUpdate(Integer... values) {
+           super.onProgressUpdate(values);
+           progressDialog.setProgress(values[0]);
+       }
+   }
 
 }

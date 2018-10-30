@@ -1,6 +1,8 @@
 package es.source.code.activity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.myapp.scos.R;
 
@@ -19,6 +22,8 @@ import es.source.code.factory.UserFactory;
 import es.source.code.model.User;
 
 public class LoginOrRegister extends AppCompatActivity implements View.OnClickListener{
+    SharedPreferences sp;
+
     public static final int loginorregister_backcode=101;
     public static final int loginorregister_loginsucuesscode=102;
 
@@ -39,6 +44,9 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onBackPressed() {
+        SharedPreferences.Editor editor=sp.edit();
+        editor.putInt("loginState",0);
+        editor.commit();
         startMain(Backstatus,Return,loginorregister_backcode);
     }
 
@@ -53,8 +61,8 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_login_or_register);
 
 
-
-
+        //初始化sharedpreferences对象
+        sp = getSharedPreferences("User", MODE_PRIVATE);
 
 
         button_login=(Button)findViewById(R.id.Button_login);
@@ -68,6 +76,20 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
         button_login.setOnClickListener(this);
         button_register.setOnClickListener(this);
         button_back.setOnClickListener(this);
+
+
+        //读取sharedpreferences,如果存在数据,则隐藏注册按钮
+        String u=sp.getString("username","");
+        String p=sp.getString("password","");
+        Log.d("pre", "addUserdataToSharedPreferences: "+u+p);
+        if(!u.equals("")&&!p.equals("")){
+            editText_username.setText(u);
+            editText_password.setText(p);
+            button_register.setVisibility(View.GONE);
+
+        }
+
+
     }
 
     @Override
@@ -80,6 +102,7 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
                 //通过正则验证 则跳转
                 if(validateUserNameorPassword(username,reg)&&validateUserNameorPassword(password,reg)){
                     User user= UserFactory.createuser(username,password,true);
+                    addUserdataToSharedPreferences(username,password,1);
                     startMain(LoginStatus,LoginSuccess,loginorregister_loginsucuesscode,user);
                 }else{
                     editText_username.setError(getString(R.string.loginOrRegister_error));
@@ -92,6 +115,8 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
                 if(validateUserNameorPassword(username,reg)&&validateUserNameorPassword(password,reg)){
                     Log.d("signin", "signin success");
                     User user= UserFactory.createuser(username,password,false);
+                    addUserdataToSharedPreferences(username,password,2);
+
                     startMain(LoginStatus,RegisterSuccess,loginorregister_loginsucuesscode,user);
                 }else{
                     editText_username.setError(getString(R.string.loginOrRegister_error));
@@ -99,6 +124,10 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.Button_back:
+                SharedPreferences.Editor editor=sp.edit();
+                editor.putInt("loginState",0);
+                editor.commit();
+
                 startMain(Backstatus,Return,loginorregister_backcode);
                 break;
 
@@ -155,5 +184,19 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
         intent.putExtra(User,user);
         setResult(resultcode,intent);
         finish();
+    }
+    //在sharedPreferences中添加用户名密码
+    public void addUserdataToSharedPreferences(String username,String password,int state){
+
+        SharedPreferences.Editor editor=sp.edit();
+        editor.putString("username",username);
+        editor.putString("password",password);
+        editor.putInt("loginState",state);
+        editor.commit();
+
+
+        String u=sp.getString("username","null");
+        String p=sp.getString("password","null");
+        Log.d("pre", "addUserdataToSharedPreferences: "+u+p);
     }
 }

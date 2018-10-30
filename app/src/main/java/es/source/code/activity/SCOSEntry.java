@@ -1,6 +1,10 @@
 package es.source.code.activity;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
 
 import com.myapp.scos.R;
 
@@ -37,6 +42,7 @@ public class SCOSEntry extends AppCompatActivity implements View.OnTouchListener
         gestureDetector=new GestureDetector(new gestureListener());
         r.setOnTouchListener(this);
         //r.setClickable(true);
+
 
     }
     //在ontouch中调用手势方法

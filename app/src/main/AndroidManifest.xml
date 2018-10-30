@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.myapp.scos">
-
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.GET_TASKS" />
     <permission
         android:name="scos.permisson.ACCESSSCOS"
         android:protectionLevel="dangerous" />
@@ -22,9 +25,11 @@
         </activity>
         <activity
             android:name="es.source.code.activity.MainScreen"
+            android:exported="true"
             android:permission="scos.permisson.ACCESSSCOS">
             <intent-filter>
                 <action android:name="scos.intent.action.SCOSMAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="scos.intent.category.SCOSLAUNCHER" />
             </intent-filter>
@@ -32,7 +37,19 @@
         <activity android:name="es.source.code.activity.LoginOrRegister" />
         <activity android:name="es.source.code.activity.FoodView" />
         <activity android:name="es.source.code.activity.FoodOrderView" />
-        <activity android:name="es.source.code.activity.FoodDetail"></activity>
+        <activity android:name="es.source.code.activity.FoodDetail" />
+        <activity android:name="es.source.code.activity.SCOSHelper"/>
+        <service android:name="es.source.code.service.ServerObserverService"/>
+        <service android:name="es.source.code.service.UpdateService"/>
+
+        <receiver
+            android:name="es.source.code.br.DeviceStartedListener" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <category android:name="android.intent.category.HOME" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

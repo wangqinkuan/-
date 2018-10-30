@@ -44,6 +44,7 @@ public class SeaFoodItemAdapter extends ArrayAdapter<Food> {
             viewHolder.foodname=(TextView)view.findViewById(R.id.food_name);
             viewHolder.foodprice=(TextView)view.findViewById(R.id.food_price);
             viewHolder.foodorderbutton=(Button)view.findViewById(R.id.food_order_button);
+            viewHolder.foodreserve=(TextView)view.findViewById(R.id.food_reserve);
             view.setTag(viewHolder);
         }else {
             view=convertView;
@@ -52,9 +53,9 @@ public class SeaFoodItemAdapter extends ArrayAdapter<Food> {
         //设置
         if(food.getFood_type()== FoodType.SeaFood){
             viewHolder.foodimage.setImageResource(food.getFood_img());
-            viewHolder.foodname.setText("菜名:"+food.getFood_name());
+            viewHolder.foodname.setText(food.getFood_name());
             viewHolder.foodprice.setText("价格:"+food.getFood_price());
-
+            viewHolder.foodreserve.setText("存量"+food.getFood_reserve());
             final int ordertime=food.getFood_order_time();
 
             if(ordertime>0) viewHolder.foodorderbutton.setText("退订");
@@ -66,16 +67,20 @@ public class SeaFoodItemAdapter extends ArrayAdapter<Food> {
                     if(food.getFood_order_time()<1){
                         int i=food.getFood_order_time()+1;
                         food.setFood_order_time(i);
+                        int reserve=food.getFood_reserve()-1;
+                        food.setFood_reserve(reserve);
                         viewHolder.foodorderbutton.setText("退订");
                     }else{
                         int i=food.getFood_order_time()-1;
                         food.setFood_order_time(i);
                         food.setFood_hasorder(false);
+                        int reserve=food.getFood_reserve()+1;
+                        food.setFood_reserve(reserve);
                         viewHolder.foodorderbutton.setText("点菜");
                     }
                     notifyDataSetChanged();
 
-                    Toast.makeText(getContext(), "点菜次数"+food.getFood_order_time(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), "点菜次数"+food.getFood_order_time(), Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -84,6 +89,7 @@ public class SeaFoodItemAdapter extends ArrayAdapter<Food> {
             viewHolder.foodname.setVisibility(View.GONE);
             viewHolder.foodprice.setVisibility(View.GONE);
             viewHolder.foodorderbutton.setVisibility(View.GONE);
+            viewHolder.foodreserve.setVisibility(View.GONE);
         }
 
 
@@ -96,7 +102,7 @@ public class SeaFoodItemAdapter extends ArrayAdapter<Food> {
 
     class ViewHolder{
         ImageView foodimage;
-        TextView foodname,foodprice;
+        TextView foodname,foodprice,foodreserve;
         Button foodorderbutton;
     }
 }

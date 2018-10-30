@@ -1,6 +1,13 @@
 package es.source.code.activity;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +40,8 @@ import es.source.code.factory.HotFoodFactory;
 import es.source.code.factory.SeaFoodFactory;
 import es.source.code.model.Food;
 import es.source.code.model.User;
+import es.source.code.service.ServerObserverService;
+import es.source.code.service.UpdateService;
 
 public class FoodView extends AppCompatActivity {
     public static FoodItemAdapter foodItemAdapters;
@@ -57,6 +66,81 @@ public class FoodView extends AppCompatActivity {
     private List<View> mViewList = new ArrayList<>();
 
     private User user;
+
+    private boolean isBound = false;
+    //是否更新
+    boolean update=true;
+    public static final int startupdate=1;
+    public static final int stopupdate=0;
+    //用于启动MyService的Intent对应的action
+    private final String SERVICE_ACTION = "com.ispring2.action.MYSERVICE";
+
+    //serviceMessenger表示的是Service端的Messenger，其内部指向了MyService的ServiceHandler实例
+    //可以用serviceMessenger向MyService发送消息
+    private Messenger serviceMessenger = null;
+
+    //clientMessenger是客户端自身的Messenger，内部指向了ClientHandler的实例
+    //MyService可以通过Message的replyTo得到clientMessenger，从而MyService可以向客户端发送消息，
+    //并由ClientHandler接收并处理来自于Service的消息
+    private Messenger clientMessenger = new Messenger(new ClientHandler());
+
+    //客户端用ClientHandler接收并处理来自于Service的消息
+    private class ClientHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == ServerObserverService.SEND_FOOD_INFO) {
+                    Bundle data = msg.getData();
+                    if (data != null) {
+                        String str = data.getString("msg");
+                        int count = data.getInt("count");
+                        //更新
+                        for (Food food : foods) {
+                            if (food.getFood_name().equals(str)) {
+                                food.setFood_reserve(count);
+                            }
+                        }
+                        synchronized (Thread.currentThread()){
+                            FoodView.nofityalladapter();
+                        }
+
+                        Log.i("DemoLog", "客户端收到新的食品信息: " + str + "存量" + count);
+                    }
+                }
+            }
+        }
+
+    private ServiceConnection conn = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            //客户端与Service建立连接
+
+            //我们可以通过从Service的onBind方法中返回的IBinder初始化一个指向Service端的Messenger
+            serviceMessenger = new Messenger(binder);
+
+            Message msg = Message.obtain();
+            msg.what = startupdate;
+
+            //此处跨进程Message通信不能将msg.obj设置为non-Parcelable的对象，应该使用Bundle
+            //需要将Message的replyTo设置为客户端的clientMessenger，
+            //以便Service可以通过它向客户端发送消息
+            msg.replyTo = clientMessenger;
+            try {
+                Log.i("DemoLog", "客户端向service发送信息");
+                serviceMessenger.send(msg);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                Log.i("DemoLog", "客户端向service发送消息失败: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            //客户端与Service失去连接
+            serviceMessenger = null;
+            isBound = false;
+            Log.i("DemoLog", "客户端 onServiceDisconnected");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +169,8 @@ public class FoodView extends AppCompatActivity {
     //导航点击
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //是否实时更新
+
         switch (item.getItemId()){
             case R.id.foodview_actionbar_hasorder:
                 Intent intent=new Intent(this,FoodOrderView.class);
@@ -97,6 +183,46 @@ public class FoodView extends AppCompatActivity {
             case R.id.foodview_actionbar_callforservice:
                 Toast.makeText(this, "呼叫服务", Toast.LENGTH_SHORT).show();
                 break;
+
+                //开始实时更新,绑定服务,发送message.what=1给服务
+            case R.id.foodview_actionbar_startupdate:
+
+                if(update) {
+                    //绑定更新服务
+                    Intent bindintent = new Intent(this, ServerObserverService.class);
+                    bindService(bindintent, conn, BIND_AUTO_CREATE);
+                    //开启通知更新
+                    Intent startupdateservice=new Intent(this, UpdateService.class);
+                    startService(startupdateservice);
+                    //发送消息,1表示开始更新
+                    if (serviceMessenger != null) {
+                        Message msg = Message.obtain();
+                        msg.what = startupdate;
+                        try {
+                            serviceMessenger.send(msg);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    item.setTitle("停止实时更新");
+                    update=false;
+                }else{
+                    //发送消息 0表示停止更新
+                    if (serviceMessenger!=null){
+                        Message msg = Message.obtain();
+                        msg.what = stopupdate;
+                        try {
+                            serviceMessenger.send(msg);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    update=true;
+                    item.setTitle("开始实时更新");
+                }
+                break;
+
+
         }
         return true;
     }
@@ -108,7 +234,7 @@ public class FoodView extends AppCompatActivity {
         FoodFactory seafoodFactory = new SeaFoodFactory();
         FoodFactory coldfoodFactory = new ColdFoodFactory();
         FoodFactory drinkfoodFactory = new DrinkFactory();
-        for(int i=0;i<2;i++){
+        for(int i=1;i<10;i++){
             Food hotfood=hotfoodFactory.CreateFood("熟食"+i, i, R.drawable.order);
             Food seafood=seafoodFactory.CreateFood("海鲜"+i, i, R.drawable.order);
             Food coldfood=coldfoodFactory.CreateFood("凉菜"+i, i, R.drawable.order);
@@ -217,8 +343,8 @@ public class FoodView extends AppCompatActivity {
             }
         });
     }
-
-    public static void nofityall(){
+    //通知四种类型的服务刷新数据
+    public static void nofityalladapter(){
         foodItemAdapters.notifyDataSetChanged();
         coldFoodItemAdapter.notifyDataSetChanged();
         seaFoodItemAdapter.notifyDataSetChanged();

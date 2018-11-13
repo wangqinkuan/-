@@ -57,10 +57,10 @@ public class FoodView extends AppCompatActivity {
     private ViewPager mViewPager;
     private LayoutInflater mInflater;
 
-    private View view_coldfood;
-    private View view_hotfood;
-    private View view_seafood;
-    private View view_drink;
+    private static View view_coldfood;
+    private static View view_hotfood;
+    private static View view_seafood;
+    private static View view_drink;
     //保存Tab与Viewpager中的数据
     private List<String> mTitleList = new ArrayList<>();
     private List<View> mViewList = new ArrayList<>();
@@ -74,6 +74,25 @@ public class FoodView extends AppCompatActivity {
     public static final int stopupdate=0;
     //用于启动MyService的Intent对应的action
     private final String SERVICE_ACTION = "com.ispring2.action.MYSERVICE";
+
+
+    private static Handler mUIHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what==7){
+                ListView foodlistView = (ListView) view_hotfood.findViewById(R.id.food_listview_hotfood);
+                ListView coldlistView = (ListView) view_coldfood.findViewById(R.id.food_listview_coldfood);
+                ListView sealistView = (ListView) view_seafood.findViewById(R.id.food_listview_seafood);
+                ListView drinklistView = (ListView) view_drink.findViewById(R.id.food_listview_drink);
+                foodlistView.setAdapter(foodItemAdapters);
+                coldlistView.setAdapter(coldFoodItemAdapter);
+                sealistView.setAdapter(seaFoodItemAdapter);
+                drinklistView.setAdapter(drinkFoodItemAdpaters);
+                nofityalladapter();
+            }
+        }
+    };
+
 
     //serviceMessenger表示的是Service端的Messenger，其内部指向了MyService的ServiceHandler实例
     //可以用serviceMessenger向MyService发送消息
@@ -91,19 +110,19 @@ public class FoodView extends AppCompatActivity {
             if (msg.what == ServerObserverService.SEND_FOOD_INFO) {
                     Bundle data = msg.getData();
                     if (data != null) {
-                        String str = data.getString("msg");
-                        int count = data.getInt("count");
-                        //更新
-                        for (Food food : foods) {
-                            if (food.getFood_name().equals(str)) {
-                                food.setFood_reserve(count);
-                            }
-                        }
-                        synchronized (Thread.currentThread()){
-                            FoodView.nofityalladapter();
-                        }
-
-                        Log.i("DemoLog", "客户端收到新的食品信息: " + str + "存量" + count);
+//                        String str = data.getString("msg");
+//                        int count = data.getInt("count");
+//                        //更新
+//                        for (Food food : foods) {
+//                            if (food.getFood_name().equals(str)) {
+//                                food.setFood_reserve(count);
+//                            }
+//                        }
+//                        synchronized (Thread.currentThread()){
+//                            FoodView.nofityalladapter();
+//                        }
+//
+//                        Log.i("DemoLog", "客户端收到新的食品信息: " + str + "存量" + count);
                     }
                 }
             }
@@ -349,6 +368,10 @@ public class FoodView extends AppCompatActivity {
         coldFoodItemAdapter.notifyDataSetChanged();
         seaFoodItemAdapter.notifyDataSetChanged();
         drinkFoodItemAdpaters.notifyDataSetChanged();
+    }
+
+    public static void updateUI(Message message) {
+        mUIHandler.sendMessage(message);
     }
 
 }

@@ -52,7 +52,6 @@ public class ColdFoodItemAdapter extends ArrayAdapter<Food> {
             viewHolder=(ViewHolder)view.getTag();
         }
         if(food.getFood_type()== FoodType.ColdFood){
-            Log.d("cold", "getView: 冷饮");
             viewHolder.foodimage.setImageResource(food.getFood_img());
             viewHolder.foodname.setText(food.getFood_name());
             viewHolder.foodprice.setText("价格:"+food.getFood_price());

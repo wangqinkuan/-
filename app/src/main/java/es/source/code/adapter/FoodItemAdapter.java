@@ -54,7 +54,6 @@ public class FoodItemAdapter extends ArrayAdapter<Food>{
             viewHolder=(ViewHolder)view.getTag();
         }
         int type=food.getFood_type();
-        Log.d("type", "getView: "+type);
         if(food.getFood_type()== FoodType.HotFood){
             viewHolder.foodimage.setImageResource(food.getFood_img());
             viewHolder.foodname.setText(food.getFood_name());

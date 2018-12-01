@@ -73,14 +73,11 @@ public class UpdateService extends IntentService{
         mBuilder.setTicker("有新的食品更新");
         mBuilder.setContentTitle("新食品").setContentText("食品更新了").setSmallIcon(R.drawable.ic_logo).setSound(soundUri);
         mBuilder.setAutoCancel(true);
-        //Notification notification = mBuilder.build();
-        //notification.flags=Notification.FLAG_NO_CLEAR;
         Intent intent=new Intent(this, MainScreen.class);
-        //intent.putExtra(FoodView.foodposition,0);
         PendingIntent resultPendingIntent=PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
-        //Notification notification = mBuilder.build();
+
         mBuilder.setContentIntent(resultPendingIntent);
-        //notification.flags=Notification.FLAG_NO_CLEAR;
+
         Notification notification = mBuilder.build();
         manager.notify(1003,notification);
 
@@ -92,8 +89,8 @@ public class UpdateService extends IntentService{
 
         StringBuilder stringBuilder = new StringBuilder();
 
-        String requestURL="http://192.168.43.214:8080/SCOSServer/foodxml";
-        //String requestURL="http://192.168.43.214:8080/SCOSServer/food";
+        //String requestURL="http://192.168.3.10:8080/SCOSServer/foodxml";
+        String requestURL="http://192.168.3.10:8080/SCOSServer/food";
         Log.i("url", requestURL);
         try {
             //存储返回结果
@@ -113,12 +110,12 @@ public class UpdateService extends IntentService{
             }
             result = stringBuilder.toString();
             Log.i("service", "getFoodUpdate: "+result);
-            //ArrayList<Food> foodupdate= parseFoodJson(result);
-            ArrayList<Food> foodupdate=parseFoodXml(result);
+            ArrayList<Food> foodupdate= parseFoodJson(result);
+            //ArrayList<Food> foodupdate=parseFoodXml(result);
             FoodView.foods.clear();
             for(Food food:foodupdate){
                 FoodView.foods.add(food);
-                Log.i("foodupdate", "getFoodUpdate: "+food.getFood_name()+food.getFood_price()+food.getFood_type());
+
             }
             Message message=new Message();
             message.what=7;
@@ -203,8 +200,6 @@ public class UpdateService extends IntentService{
                         Node chil = chilNod.item(k);
                         //区分text 类型node
                         if(chilNod.item(k).getNodeType() == Node.ELEMENT_NODE){
-                            Log.i("xml", "子节点名："+chil.getNodeName()+":");
-                            Log.i("xml", "子节点值："+chilNod.item(k).getTextContent());
                             if(chil.getNodeName().equals("Name")) name=chilNod.item(k).getTextContent();
                             if(chil.getNodeName().equals("price")) price=Double.parseDouble(chilNod.item(k).getTextContent());
                             if(chil.getNodeName().equals("left")) left=Integer.parseInt(chilNod.item(k).getTextContent());
@@ -235,7 +230,7 @@ public class UpdateService extends IntentService{
             e.printStackTrace();
         }
         long endTime=System.currentTimeMillis();
-        Log.d("解析时间", (endTime-startTime)+"ms");
+        Log.i("解析时间", (endTime-startTime)+"ms");
         return result;
     }
 }

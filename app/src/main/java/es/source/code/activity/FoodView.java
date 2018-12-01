@@ -132,13 +132,10 @@ public class FoodView extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder binder) {
             //客户端与Service建立连接
-
             //我们可以通过从Service的onBind方法中返回的IBinder初始化一个指向Service端的Messenger
             serviceMessenger = new Messenger(binder);
-
             Message msg = Message.obtain();
             msg.what = startupdate;
-
             //此处跨进程Message通信不能将msg.obj设置为non-Parcelable的对象，应该使用Bundle
             //需要将Message的replyTo设置为客户端的clientMessenger，
             //以便Service可以通过它向客户端发送消息
@@ -205,7 +202,6 @@ public class FoodView extends AppCompatActivity {
 
                 //开始实时更新,绑定服务,发送message.what=1给服务
             case R.id.foodview_actionbar_startupdate:
-
                 if(update) {
                     //绑定更新服务
                     Intent bindintent = new Intent(this, ServerObserverService.class);

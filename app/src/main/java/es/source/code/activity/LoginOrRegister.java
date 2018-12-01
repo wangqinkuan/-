@@ -255,7 +255,7 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
                 BufferedReader reader = null;
                 StringBuilder stringBuilder = new StringBuilder();
 
-                String requestURL="http://192.168.43.214:8080/SCOSServer/login"+"?"+"username="+username+"&"+"password="+pasasword;
+                String requestURL="http://192.168.3.10:8080/SCOSServer/login"+"?"+"username="+username+"&"+"password="+pasasword;
                 Log.i("url", requestURL);
                 try {
                     //存储返回结果
@@ -306,7 +306,7 @@ public class LoginOrRegister extends AppCompatActivity implements View.OnClickLi
                 BufferedReader reader = null;
                 StringBuilder stringBuilder = new StringBuilder();
 
-                String requestURL="http://192.168.43.214:8080/SCOSServer/register"+"?"+"username="+username+"&"+"password="+pasasword;
+                String requestURL="http://192.168.3.10:8080/SCOSServer/register"+"?"+"username="+username+"&"+"password="+pasasword;
                 Log.i("url", requestURL);
                 try {
                     //存储返回结果

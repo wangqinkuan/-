@@ -187,7 +187,7 @@ public class FoodOrderView extends AppCompatActivity {
                @Override
                public void run() {
                    button_buysubmit.setEnabled(false);
-                   Toast.makeText(FoodOrderView.this, "结账金额"+textView_ordertotalprice.getText(), Toast.LENGTH_SHORT).show();
+                   Toast.makeText( FoodOrderView.this, "结账金额"+textView_ordertotalprice.getText(), Toast.LENGTH_SHORT).show();
 
                }
            });
